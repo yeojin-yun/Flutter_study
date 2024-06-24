@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Moongchi extends ChangeNotifier {
-  final String name;
-  final String breed;
-  int age;
+  final String name = 'Moongchi';
+  final String breed = 'Papillon';
+  int age = 1;
 
-  Moongchi({
-    required this.name,
-    required this.breed,
-    this.age = 1,
-  });
-
-  getAge() {
+  upAge() {
     age++;
-    debugPrint('age = $age');
     notifyListeners();
   }
 
