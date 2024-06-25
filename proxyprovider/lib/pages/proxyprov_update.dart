@@ -76,6 +76,7 @@ class IncreaseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('statement');
     return ElevatedButton(
       onPressed: increment,
       child: const Text(

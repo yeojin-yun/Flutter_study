@@ -32,13 +32,22 @@ class _ProxyProvProxyProvState extends State<ProxyProvProxyProv> {
         title: const Text('ProxyProvider ProxyProvider'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const ShowTranslations(),
-            const SizedBox(height: 20.0),
-            IncreaseButton(increment: increment),
+        child: MultiProvider(
+          providers: [
+            //1번 ProxyProvider 
+            //별도의 Provider없이 int 값에 의존하는 ProxyProvider
+            ProxyProvider0<int>(
+              update: (context, value) => counter,
+            ),
           ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const ShowTranslations(),
+              const SizedBox(height: 20.0),
+              IncreaseButton(increment: increment),
+            ],
+          ),
         ),
       ),
     );

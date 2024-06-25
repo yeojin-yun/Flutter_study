@@ -21,6 +21,7 @@ class _WhyProxyProvState extends State<WhyProxyProv> {
   void increment() {
     setState(() {
       counter++;
+
       print('counter: $counter');
     });
   }
@@ -32,17 +33,33 @@ class _WhyProxyProvState extends State<WhyProxyProv> {
       appBar: AppBar(
         title: const Text('Why ProxyProvider'),
       ),
-      body: Provider(
+      body: Provider<Translations>(
         create: (context) => Translations(counter),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const ShowTranslations(),
-              const SizedBox(height: 20.0),
-              IncreaseButton(increment: increment),
-            ],
-          ),
+          child: Builder(builder: (contextA) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // ShowTranslations(),
+                Text(
+                  contextA.read<Translations>().title,
+                  style: const TextStyle(fontSize: 28.0),
+                ),
+                const SizedBox(height: 20.0),
+                ElevatedButton(
+                  onPressed: () {
+                    increment();
+                    debugPrint('${contextA.read<Translations>()._value}');
+                    debugPrint(contextA.read<Translations>().title);
+                  },
+                  child: const Text(
+                    'INCREASE',
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                ),
+              ],
+            );
+          }),
         ),
       ),
     );
@@ -59,25 +76,6 @@ class ShowTranslations extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(fontSize: 28.0),
-    );
-  }
-}
-
-class IncreaseButton extends StatelessWidget {
-  final VoidCallback increment;
-  const IncreaseButton({
-    super.key,
-    required this.increment,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: increment,
-      child: const Text(
-        'INCREASE',
-        style: TextStyle(fontSize: 20.0),
-      ),
     );
   }
 }
