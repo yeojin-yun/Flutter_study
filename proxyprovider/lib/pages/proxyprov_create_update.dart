@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 class Translations {
   late int _value; //update시 값이 주어진 것이므로 late 키워드 사용
 
+  ///객체의 내부 상태 변경
   update(int newValue) {
     _value = newValue;
   }
@@ -32,7 +33,7 @@ class _ProxyProvCreateUpdateState extends State<ProxyProvCreateUpdate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ProxyProvider create/update'),
+        title: const Text('3. ProxyProvider create/update'),
       ),
       body: Center(
         child: ProxyProvider0<Translations>(
@@ -52,6 +53,7 @@ class _ProxyProvCreateUpdateState extends State<ProxyProvCreateUpdate> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //const로 바뀌면 UI 안 바뀜
+              //Translations의 _value을 지연 초기화 하면서
               ShowTranslations(),
               const SizedBox(height: 20.0),
               IncreaseButton(increment: increment),

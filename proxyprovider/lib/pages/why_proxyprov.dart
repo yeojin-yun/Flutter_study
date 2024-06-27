@@ -31,7 +31,7 @@ class _WhyProxyProvState extends State<WhyProxyProv> {
     // print('string: ${context.read<Translations>().title}');
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Why ProxyProvider'),
+        title: const Text('1. Why ProxyProvider'),
       ),
       body: Provider<Translations>(
         create: (context) => Translations(counter),
