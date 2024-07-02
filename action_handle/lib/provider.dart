@@ -15,7 +15,8 @@ class AppProvider with ChangeNotifier {
     try {
       if (searchTerm == 'fail') {
         debugPrint('-----fail 입력-------');
-        throw 'result fail';
+        // throw Exception('user type fail');
+        throw 'user type fail';
       }
 
       _state = AppState.success;
