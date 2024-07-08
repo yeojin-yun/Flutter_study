@@ -42,11 +42,13 @@ class ActivieTodoCount with ChangeNotifier {
   ///List<Todo>에서 각 항목들의 isCompleted가 true인지 false인지 알아야 하기 때문에 -> TodoList를 가져와야 함
   ///todoList 처음으로 얻을 때, 그 이후 값이 변화가 있을 때마다 호출됨
   void update(TodoList todoList) {
+    debugPrint('✅[Active Todo - update 1] ${todoList.state}');
     final int newActivieTodoCount = todoList.state.todos
         .where((Todo element) => !element.isCompleted)
         .toList()
         .length;
     _state = _state.copyWith(activeTodoCount: newActivieTodoCount);
+    debugPrint('✅[Active Todo - update 2] $_state');
     notifyListeners();
   }
 }

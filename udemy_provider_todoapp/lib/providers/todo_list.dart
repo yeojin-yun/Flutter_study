@@ -52,6 +52,7 @@ class TodoList with ChangeNotifier {
 
     ///추가된 todo까지 더해진 todo 리스트를 _state에 할당
     _state = _state.copyWith(todos: newTodos);
+    debugPrint('✅[TodoList - addTodo] $_state');
     notifyListeners();
   }
 
@@ -91,11 +92,30 @@ class TodoList with ChangeNotifier {
     notifyListeners();
   }
 
+  ///체크박스 토글
+  void toggleTodo(String id) {
+    final newTodos = _state.todos.map(
+      (Todo element) {
+        if (element.id == id) {
+          return Todo(
+              id: id,
+              description: element.description,
+              isCompleted: !element.isCompleted);
+        }
+        return element;
+      },
+    ).toList();
+    _state = _state.copyWith(todos: newTodos);
+    debugPrint('✅[TodoList - toggleTodo] $_state');
+    notifyListeners();
+  }
+
   ///todo 삭제
   void removeTodo(String id) {
     final List<Todo> newTodos =
         _state.todos.where((Todo element) => element.id != id).toList();
     _state = _state.copyWith(todos: newTodos);
+    debugPrint('✅[TodoList - removeTodo] $_state');
     notifyListeners();
   }
 }

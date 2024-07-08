@@ -42,6 +42,7 @@ class TodoFilter with ChangeNotifier {
   void changFilter(Filter newFilter) {
     ///copyWith : 기존 값이 아닌 새로운 값을 만듦
     _state = _state.copyWith(filter: newFilter);
+    debugPrint('✅[TodoFilter - changFilter] $_state');
     notifyListeners();
   }
 }
