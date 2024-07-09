@@ -71,6 +71,7 @@ class FilteredTodos with ChangeNotifier {
     }
 
     _state = _state.copyWith(FilteredTodos: _filteredTodos);
+    debugPrint('✅[FilteredTodos] ${_state.filteredTodos.length}');
     notifyListeners();
   }
 }

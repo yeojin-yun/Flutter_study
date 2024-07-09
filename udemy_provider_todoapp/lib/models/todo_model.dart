@@ -1,14 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:uuid/uuid.dart';
 
-Uuid uuid = Uuid();
-
 ///Todo들의 상태를 구분짓기 위한 enum
 enum Filter { all, active, completed }
 
 //Todo 클래스의 기능
 //1. 새로운 Todo를 만들 떄 -> Unique한 id
 //2. 기존 Todo를 edit 할 때 -> 기존 id 이용
+
+Uuid uuid = const Uuid();
+
 class Todo {
   final String id;
   final String description;

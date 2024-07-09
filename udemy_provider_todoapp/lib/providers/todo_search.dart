@@ -6,6 +6,7 @@ class TodoSearchState {
 
   TodoSearchState({required this.searchTerm});
 
+  //별도의 생성자
   factory TodoSearchState.initialize() {
     return TodoSearchState(searchTerm: "");
   }

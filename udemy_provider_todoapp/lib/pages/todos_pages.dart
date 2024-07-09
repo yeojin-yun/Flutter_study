@@ -43,7 +43,7 @@ class TodoHeader extends StatelessWidget {
       children: [
         const Text('TODO'),
         Text(
-            '${context.watch<ActivieTodoCount>().state.activeTodoCount} items left'),
+            '${context.watch<ActiveTodoCount>().state.activeTodoCount} items left'),
       ],
     );
   }
@@ -278,11 +278,15 @@ class _TodoItemState extends State<TodoItem> {
                     ),
                     TextButton(
                       onPressed: () {
+                        _error = _textController.text.isEmpty ? true : false;
+
+                        // if (!_error) {
+                        //   context.read<TodoList>().editDescription(
+                        //       widget.todo.id, _textController.text);
+                        //   Navigator.pop(context);
+                        // }
                         setState(
                           () {
-                            _error =
-                                _textController.text.isEmpty ? true : false;
-
                             if (!_error) {
                               context.read<TodoList>().editDescription(
                                   widget.todo.id, _textController.text);

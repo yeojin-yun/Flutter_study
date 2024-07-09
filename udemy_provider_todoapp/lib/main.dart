@@ -23,10 +23,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => TodoSearch(),
         ),
-        ChangeNotifierProxyProvider<TodoList, ActivieTodoCount>(
-          create: (context) => ActivieTodoCount(),
+        ChangeNotifierProxyProvider<TodoList, ActiveTodoCount>(
+          create: (context) => ActiveTodoCount(),
           update: (BuildContext context, TodoList todo,
-                  ActivieTodoCount? activeTodoCount) =>
+                  ActiveTodoCount? activeTodoCount) =>
               activeTodoCount!..update(todo),
         ),
         ChangeNotifierProxyProvider3(
