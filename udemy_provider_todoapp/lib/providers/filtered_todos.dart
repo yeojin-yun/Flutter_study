@@ -38,8 +38,14 @@ class FilteredTodosState {
 }
 
 class FilteredTodos with ChangeNotifier {
-  FilteredTodosState _state = FilteredTodosState.initialize();
+  // FilteredTodosState _state = FilteredTodosState.initialize();
   FilteredTodosState get state => _state;
+  final List<Todo> initialTodoList;
+  late FilteredTodosState _state;
+
+  FilteredTodos({required this.initialTodoList}) {
+    _state = FilteredTodosState(filteredTodos: initialTodoList);
+  }
 
   ///필요한 값 : todo리스트, 현재 filter, 사용자의 검색어
   ///의존값을 처음으로 얻을 때, 그 이후 의존값이 변경될 때마다 여러번 호출됨 -> []로 설정했던 초기값은 금방 변경됨

@@ -13,26 +13,50 @@ class _DialogPageState extends State<DialogPage> {
   @override
   void initState() {
     // TODO: implement initState
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('저는 얼럿입니다.'),
-        content: Text('제가 initState에서 나왔나요?'),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('확인'))
-        ],
-      ),
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('저는 얼럿입니다.'),
+            content: Text('제가 initState에서 나왔나요?'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('확인'))
+            ],
+          ),
+        );
+      },
     );
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final int = context.watch<Counter>().number;
+    final int number = context.watch<Counter>().number;
+    if (number == 3) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text('Count is 3'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('확인'))
+                ],
+              );
+            },
+          );
+        },
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -41,7 +65,7 @@ class _DialogPageState extends State<DialogPage> {
       ),
       body: Center(
         child: Text(
-          '$int',
+          '$number',
           style: TextStyle(fontSize: 30),
         ),
       ),

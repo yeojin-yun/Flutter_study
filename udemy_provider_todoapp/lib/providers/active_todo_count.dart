@@ -36,7 +36,14 @@ class ActiveTodoCountState {
 }
 
 class ActiveTodoCount with ChangeNotifier {
-  ActiveTodoCountState _state = ActiveTodoCountState.intialize();
+  late ActiveTodoCountState _state;
+  final int initialActiveTodoCount;
+
+  ActiveTodoCount({required this.initialActiveTodoCount}) {
+    _state = ActiveTodoCountState(activeTodoCount: initialActiveTodoCount);
+  }
+
+  // ActiveTodoCountState _state = ActiveTodoCountState.intialize();
   ActiveTodoCountState get state => _state;
 
   ///List<Todo>에서 각 항목들의 isCompleted가 true인지 false인지 알아야 하기 때문에 -> TodoList를 가져와야 함

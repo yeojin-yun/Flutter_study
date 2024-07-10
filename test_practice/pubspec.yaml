@@ -30,9 +30,9 @@ environment:
 dependencies:
   build_runner: ^2.4.11
   cupertino_icons: ^1.0.6
+  dio: ^5.5.0+1
   flutter:
     sdk: flutter
-  http: ^1.2.1
   mockito: ^5.4.4
 
 dev_dependencies:

@@ -918,3 +918,397 @@ onChanged: (String searchTerm) {
   }
 },
 ```
+---
+# initial state
+
+-   사실 위에서 사용된 ActivieTodoCount와 FilteredTodo는 정확하지 않은 initialState를 가지고 있었음
+    -   ActiveCount는 0으로 초기화했고, FilteredTodo는 빈 배열로 초기화 했기 때문에
+    -   그러나 create와 동시에 update가 호출되기 때문에 정상작동 했음
+    -   정확한 initial state를 주는 방법도 있음
+
+### Provider ⭐️
+
+```dart
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:udemy_provider_todoapp/models/todo_model.dart';
+import 'package:udemy_provider_todoapp/providers/todo_list.dart';
+
+class ActiveTodoCountState {
+  final int activeTodoCount;
+
+  ActiveTodoCountState({required this.activeTodoCount});
+
+  factory ActiveTodoCountState.intialize() {
+    return ActiveTodoCountState(activeTodoCount: 0);
+  }
+
+  ActiveTodoCountState copyWith({
+    int? activeTodoCount,
+  }) {
+    return ActiveTodoCountState(
+      activeTodoCount: activeTodoCount ?? this.activeTodoCount,
+    );
+  }
+
+  @override
+  bool operator ==(covariant ActiveTodoCountState other) {
+    if (identical(this, other)) return true;
+
+    return other.activeTodoCount == activeTodoCount;
+  }
+
+  @override
+  int get hashCode => activeTodoCount.hashCode;
+
+  @override
+  String toString() => 'ActiveTodoCount(activeTodoCount: $activeTodoCount)';
+}
+
+class ActiveTodoCount with ChangeNotifier {
+  
+  // ⭐️ 1. 초기값을 나타내는 속성을 만들고
+  final int initialActiveTodoCount;
+  
+  // ⭐️ state는 생성자에서 초기화될 수 있도록 late 키워드 붙이기
+  late ActiveTodoCountState _state;
+
+  // ⭐️ 2. 생성자에서 변수 초기화 + State는 late로 선언했다가 변수가 초기화 될 때 할당될 수 있도록
+  ActiveTodoCount({required this.initialActiveTodoCount}) {
+    _state = ActiveTodoCountState(activeTodoCount: initialActiveTodoCount);
+  }
+
+  ActiveTodoCountState get state => _state;
+
+  ///List<Todo>에서 각 항목들의 isCompleted가 true인지 false인지 알아야 하기 때문에 -> TodoList를 가져와야 함
+  ///todoList 처음으로 얻을 때, 그 이후 값이 변화가 있을 때마다 호출됨
+  void update(TodoList todoList) {
+    debugPrint('✅[ActiveTodo - before] ${_state.activeTodoCount}');
+    final int newActivieTodoCount = todoList.state.todos
+        .where((Todo element) => !element.isCompleted)
+        .toList()
+        .length;
+    _state = _state.copyWith(activeTodoCount: newActivieTodoCount);
+    debugPrint('✅[ActiveTodo - after] ${_state.activeTodoCount}');
+    notifyListeners();
+  }
+}
+
+
+```
+
+```dart
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/foundation.dart';
+
+import 'package:udemy_provider_todoapp/models/todo_model.dart';
+import 'package:udemy_provider_todoapp/providers/todo_filter.dart';
+import 'package:udemy_provider_todoapp/providers/todo_search.dart';
+import 'package:udemy_provider_todoapp/providers/todo_list.dart';
+
+class FilteredTodosState {
+  final List<Todo> filteredTodos;
+
+  FilteredTodosState({required this.filteredTodos});
+
+  factory FilteredTodosState.initialize() {
+    return FilteredTodosState(filteredTodos: []);
+  }
+
+  FilteredTodosState copyWith({
+    List<Todo>? FilteredTodos,
+  }) {
+    return FilteredTodosState(
+      filteredTodos: FilteredTodos ?? this.filteredTodos,
+    );
+  }
+
+  @override
+  String toString() => 'FilteredTodosState(FilteredTodos: $filteredTodos)';
+
+  @override
+  bool operator ==(covariant FilteredTodosState other) {
+    if (identical(this, other)) return true;
+
+    return listEquals(other.filteredTodos, filteredTodos);
+  }
+
+  @override
+  int get hashCode => filteredTodos.hashCode;
+}
+
+class FilteredTodos with ChangeNotifier {
+  // ⭐️ 1. 초기값을 나타내는 속성을 만들고
+  final List<Todo> initialTodoList;
+  late FilteredTodosState _state;
+  FilteredTodosState get state => _state;
+
+  // ⭐️ 2. 생성자에서 초기화하되, State는 late로 선언했다가 변수가 초기화 될 때 할당될 수 있도록
+  FilteredTodos({required this.initialTodoList}) {
+    _state = FilteredTodosState(filteredTodos: initialTodoList);
+  }
+
+  ///필요한 값 : todo리스트, 현재 filter, 사용자의 검색어
+  ///의존값을 처음으로 얻을 때, 그 이후 의존값이 변경될 때마다 여러번 호출됨 -> []로 설정했던 초기값은 금방 변경됨
+  void update(TodoFilter todoFilter, TodoSearch todoSearch, TodoList todoList) {
+    List<Todo> _filteredTodos;
+
+    ///1. 필터에 따라 todo 리스트 뽑아내기
+    switch (todoFilter.state.filter) {
+      case Filter.active:
+        _filteredTodos = todoList.state.todos
+            .where((Todo element) => !element.isCompleted)
+            .toList();
+        break;
+      case Filter.completed:
+        _filteredTodos = todoList.state.todos
+            .where((Todo element) => element.isCompleted)
+            .toList();
+        break;
+      case Filter.all:
+        _filteredTodos = todoList.state.todos;
+    }
+
+    ///2. 검색어 필터
+    if (todoSearch.state.searchTerm.isNotEmpty) {
+      _filteredTodos = _filteredTodos
+          .where((Todo element) =>
+              element.description.contains(todoSearch.state.searchTerm))
+          .toList();
+    }
+
+    _state = _state.copyWith(FilteredTodos: _filteredTodos);
+    debugPrint('✅[FilteredTodos] ${_state.filteredTodos.length}');
+    notifyListeners();
+  }
+}
+
+
+```
+
+### Provider 사용 선언 ⭐️
+
+```dart
+providers: [
+  ...
+        ChangeNotifierProxyProvider<TodoList, ActiveTodoCount>(
+          //⭐️ create할 때 위에서 만든 생성자로 초기화
+          create: (context) => ActiveTodoCount(
+              initialActiveTodoCount:
+                  context.read<TodoList>().state.todos.length),
+          update: (BuildContext context, TodoList todo,
+                  ActiveTodoCount? activeTodoCount) =>
+              activeTodoCount!..update(todo),
+        ),
+
+        ChangeNotifierProxyProvider3(
+          //⭐️ create할 때 위에서 만든 생성자로 초기화
+          create: (context) => FilteredTodos(
+              initialTodoList: context.read<TodoList>().state.todos),
+          update: (BuildContext context,
+                  TodoList todoLIst,
+                  TodoSearch todoSearch,
+                  TodoFilter todoFilter,
+                  FilteredTodos? filteredTodo) =>
+              filteredTodo!..update(todoFilter, todoSearch, todoLIst),
+        )
+],
+
+```# initial state
+
+-   사실 위에서 사용된 ActivieTodoCount와 FilteredTodo는 정확하지 않은 initialState를 가지고 있었음
+    -   ActiveCount는 0으로 초기화했고, FilteredTodo는 빈 배열로 초기화 했기 때문에
+    -   그러나 create와 동시에 update가 호출되기 때문에 정상작동 했음
+    -   정확한 initial state를 주는 방법도 있음
+
+### Provider ⭐️
+
+```dart
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:udemy_provider_todoapp/models/todo_model.dart';
+import 'package:udemy_provider_todoapp/providers/todo_list.dart';
+
+class ActiveTodoCountState {
+  final int activeTodoCount;
+
+  ActiveTodoCountState({required this.activeTodoCount});
+
+  factory ActiveTodoCountState.intialize() {
+    return ActiveTodoCountState(activeTodoCount: 0);
+  }
+
+  ActiveTodoCountState copyWith({
+    int? activeTodoCount,
+  }) {
+    return ActiveTodoCountState(
+      activeTodoCount: activeTodoCount ?? this.activeTodoCount,
+    );
+  }
+
+  @override
+  bool operator ==(covariant ActiveTodoCountState other) {
+    if (identical(this, other)) return true;
+
+    return other.activeTodoCount == activeTodoCount;
+  }
+
+  @override
+  int get hashCode => activeTodoCount.hashCode;
+
+  @override
+  String toString() => 'ActiveTodoCount(activeTodoCount: $activeTodoCount)';
+}
+
+class ActiveTodoCount with ChangeNotifier {
+  
+  // ⭐️ 1. 초기값을 나타내는 속성을 만들고
+  final int initialActiveTodoCount;
+  
+  // ⭐️ state는 생성자에서 초기화될 수 있도록 late 키워드 붙이기
+  late ActiveTodoCountState _state;
+
+  // ⭐️ 2. 생성자에서 변수 초기화 + State는 late로 선언했다가 변수가 초기화 될 때 할당될 수 있도록
+  ActiveTodoCount({required this.initialActiveTodoCount}) {
+    _state = ActiveTodoCountState(activeTodoCount: initialActiveTodoCount);
+  }
+
+  ActiveTodoCountState get state => _state;
+
+  ///List<Todo>에서 각 항목들의 isCompleted가 true인지 false인지 알아야 하기 때문에 -> TodoList를 가져와야 함
+  ///todoList 처음으로 얻을 때, 그 이후 값이 변화가 있을 때마다 호출됨
+  void update(TodoList todoList) {
+    debugPrint('✅[ActiveTodo - before] ${_state.activeTodoCount}');
+    final int newActivieTodoCount = todoList.state.todos
+        .where((Todo element) => !element.isCompleted)
+        .toList()
+        .length;
+    _state = _state.copyWith(activeTodoCount: newActivieTodoCount);
+    debugPrint('✅[ActiveTodo - after] ${_state.activeTodoCount}');
+    notifyListeners();
+  }
+}
+
+
+```
+
+```dart
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/foundation.dart';
+
+import 'package:udemy_provider_todoapp/models/todo_model.dart';
+import 'package:udemy_provider_todoapp/providers/todo_filter.dart';
+import 'package:udemy_provider_todoapp/providers/todo_search.dart';
+import 'package:udemy_provider_todoapp/providers/todo_list.dart';
+
+class FilteredTodosState {
+  final List<Todo> filteredTodos;
+
+  FilteredTodosState({required this.filteredTodos});
+
+  factory FilteredTodosState.initialize() {
+    return FilteredTodosState(filteredTodos: []);
+  }
+
+  FilteredTodosState copyWith({
+    List<Todo>? FilteredTodos,
+  }) {
+    return FilteredTodosState(
+      filteredTodos: FilteredTodos ?? this.filteredTodos,
+    );
+  }
+
+  @override
+  String toString() => 'FilteredTodosState(FilteredTodos: $filteredTodos)';
+
+  @override
+  bool operator ==(covariant FilteredTodosState other) {
+    if (identical(this, other)) return true;
+
+    return listEquals(other.filteredTodos, filteredTodos);
+  }
+
+  @override
+  int get hashCode => filteredTodos.hashCode;
+}
+
+class FilteredTodos with ChangeNotifier {
+  // ⭐️ 1. 초기값을 나타내는 속성을 만들고
+  final List<Todo> initialTodoList;
+  late FilteredTodosState _state;
+  FilteredTodosState get state => _state;
+
+  // ⭐️ 2. 생성자에서 초기화하되, State는 late로 선언했다가 변수가 초기화 될 때 할당될 수 있도록
+  FilteredTodos({required this.initialTodoList}) {
+    _state = FilteredTodosState(filteredTodos: initialTodoList);
+  }
+
+  ///필요한 값 : todo리스트, 현재 filter, 사용자의 검색어
+  ///의존값을 처음으로 얻을 때, 그 이후 의존값이 변경될 때마다 여러번 호출됨 -> []로 설정했던 초기값은 금방 변경됨
+  void update(TodoFilter todoFilter, TodoSearch todoSearch, TodoList todoList) {
+    List<Todo> _filteredTodos;
+
+    ///1. 필터에 따라 todo 리스트 뽑아내기
+    switch (todoFilter.state.filter) {
+      case Filter.active:
+        _filteredTodos = todoList.state.todos
+            .where((Todo element) => !element.isCompleted)
+            .toList();
+        break;
+      case Filter.completed:
+        _filteredTodos = todoList.state.todos
+            .where((Todo element) => element.isCompleted)
+            .toList();
+        break;
+      case Filter.all:
+        _filteredTodos = todoList.state.todos;
+    }
+
+    ///2. 검색어 필터
+    if (todoSearch.state.searchTerm.isNotEmpty) {
+      _filteredTodos = _filteredTodos
+          .where((Todo element) =>
+              element.description.contains(todoSearch.state.searchTerm))
+          .toList();
+    }
+
+    _state = _state.copyWith(FilteredTodos: _filteredTodos);
+    debugPrint('✅[FilteredTodos] ${_state.filteredTodos.length}');
+    notifyListeners();
+  }
+}
+
+
+```
+
+### Provider 사용 선언 ⭐️
+
+```dart
+providers: [
+  ...
+        ChangeNotifierProxyProvider<TodoList, ActiveTodoCount>(
+          //⭐️ create할 때 위에서 만든 생성자로 초기화
+          create: (context) => ActiveTodoCount(
+              initialActiveTodoCount:
+                  context.read<TodoList>().state.todos.length),
+          update: (BuildContext context, TodoList todo,
+                  ActiveTodoCount? activeTodoCount) =>
+              activeTodoCount!..update(todo),
+        ),
+
+        ChangeNotifierProxyProvider3(
+          //⭐️ create할 때 위에서 만든 생성자로 초기화
+          create: (context) => FilteredTodos(
+              initialTodoList: context.read<TodoList>().state.todos),
+          update: (BuildContext context,
+                  TodoList todoLIst,
+                  TodoSearch todoSearch,
+                  TodoFilter todoFilter,
+                  FilteredTodos? filteredTodo) =>
+              filteredTodo!..update(todoFilter, todoSearch, todoLIst),
+        )
+],
+
+```
