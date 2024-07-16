@@ -37,6 +37,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ///addListener 등록을 위한 프로바디어 객체
+  late final AppProvider appProvider;
   //formField를 구별하기 위한 global key
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   //자동 유효성 검사 -> disabled, always, onUserInteraction이 있음
@@ -44,27 +46,42 @@ class _MyHomePageState extends State<MyHomePage> {
   //텍스트 필드에 입력될 값
   String? searchTerm;
 
-  Future<void> submit() async {
+  void submit() {
     //✅일단 form이 한 번 submit 된 후에는 모든 form 입력에 대해서는 validation을 수행한다
     autovalidateMode = AutovalidateMode.always;
     //✅form의 현재 상태의 유효성을 체크하여 문제 없으면 form을 save -> TextFromField의 onsaved 메서드 호출됨
     final form = formKey.currentState;
     if (form == null || !form.validate()) return;
     form.save(); //onsaved 메서드 호출
+    context.read<AppProvider>().getResult(searchTerm!);
+  }
 
-    //✅상위 호출부
-    try {
-      await context.read<AppProvider>().getResult(searchTerm!);
-      //✅성공페이지로
+  @override
+  void initState() {
+    // TODO: implement initState
+    ///객체 초기화 및 리스너 등록
+    appProvider = context.read<AppProvider>();
+    appProvider.addListener(addListener);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    ///리스터 해제 작업(필수)
+    appProvider.removeListener(addListener);
+    super.dispose();
+  }
+
+  void addListener() {
+    if (appProvider.state == AppState.success) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => SuccessPage(),
         ),
       );
-    } catch (e) {
-      //✅여기로 searchTerm=='fail'인 케이스와 error 케이스가 들어옴
-      //이런 경우에는 dialog 띄워주기
+    } else if (appProvider.state == AppState.error) {
       showDialog(
         context: context,
         builder: (context) {
@@ -79,6 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppProvider>().state;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

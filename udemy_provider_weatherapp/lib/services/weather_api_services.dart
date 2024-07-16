@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:udemy_provider_weatherapp/constants/constant.dart';
@@ -15,6 +16,7 @@ class WeatherApiServices {
 
   ///1.
   Future<DirectGeocoding> getDirectGeocoding(String city) async {
+    debugPrint('✅ 4. [apiService] - getDirectGeocoding');
     final Uri uri = Uri(
       scheme: 'https',
       host: kApiHost,
@@ -47,6 +49,7 @@ class WeatherApiServices {
 
   ///2. 1번에서 받아온 데이터를 바탕으로 weather 정보 받는 함수
   Future<Weather> getWeather(DirectGeocoding directGeocoing) async {
+    debugPrint('✅ 4 [apiService] - directGeocoing');
     final Uri uri = Uri(
       scheme: 'https',
       host: kApiHost,

@@ -6,6 +6,11 @@ import 'package:riverpod_basic/utils/routes.dart';
 final counterProvider = StateNotifierProvider<CounterProvider, CounterState>(
   (ref) => CounterProvider(),
 );
+
+final proxyProvider = StateProvider<String>((ref) {
+  final int count = ref.watch(counterProvider).count;
+  return '현재 count는? $count';
+});
 void main() {
   runApp(
     // 앱의 최상위에 ProviderScope를 추가
@@ -56,9 +61,21 @@ class MyHomePage extends StatelessWidget {
             },
           ),
           MenuListTile(
+            title: 'proxy',
+            onTap: () {
+              Navigator.pushNamed(context, Routes.proxy);
+            },
+          ),
+          MenuListTile(
             title: '할 일',
             onTap: () {
               Navigator.pushNamed(context, Routes.todo);
+            },
+          ),
+          MenuListTile(
+            title: 'jsonplaceholder',
+            onTap: () {
+              Navigator.pushNamed(context, Routes.json);
             },
           ),
           MenuListTile(

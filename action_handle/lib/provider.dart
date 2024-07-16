@@ -25,7 +25,6 @@ class AppProvider with ChangeNotifier {
       debugPrint('----- [1]catch $e------');
       _state = AppState.error;
       notifyListeners();
-      rethrow;
     }
   }
 }

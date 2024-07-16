@@ -11,6 +11,7 @@ class WeatherRepository {
   WeatherRepository({required this.weatherApiServices});
 
   Future<Weather> fetchWeather(String city) async {
+    debugPrint('✅ 3. [repository] fetchWeather');
     try {
       final DirectGeocoding directGeocoding =
           await weatherApiServices.getDirectGeocoding(city);
