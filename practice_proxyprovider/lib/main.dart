@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:practice_proxyprovider/proxyprovider.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/counter_page.dart';
@@ -15,8 +16,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<Counter>(
-      create: (_) => Counter(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<Counter>(
+          create: (context) => Counter(),
+        ),
+        ChangeNotifierProvider<Auth>(
+          create: (context) => Auth(),
+        ),
+        ProxyProvider<Auth, User>(
+          update: (BuildContext context, Auth value, User? previous) {
+            debugPrint('✅=====update $value | $previous');
+            return User(value.isLoggedIn);
+          },
+        ),
+      ],
       child: MaterialApp(
         title: 'addPostFrameCallback',
         debugShowCheckedModeBanner: false,
@@ -24,7 +38,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const MyHomePage(),
+        home: const ProxyProviderExample(),
       ),
     );
   }

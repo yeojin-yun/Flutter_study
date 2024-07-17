@@ -1,6 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_basic/providers/counter.dart';
+import 'package:riverpod_basic/providers/user_provider.dart';
+import 'package:riverpod_basic/repository/user_repository.dart';
+
+import 'package:riverpod_basic/services/apiservice.dart';
 import 'package:riverpod_basic/utils/routes.dart';
 
 final counterProvider = StateNotifierProvider<CounterProvider, CounterState>(
@@ -11,6 +16,16 @@ final proxyProvider = StateProvider<String>((ref) {
   final int count = ref.watch(counterProvider).count;
   return '현재 count는? $count';
 });
+
+final userRepository = Provider<UserRepository>(
+  (ref) => UserRepository(apiservice: Apiservice(dio: Dio())),
+);
+final userStateProvider = StateNotifierProvider<UserStateProvider, UserState>(
+  (ref) {
+    final userReposit = ref.read(userRepository);
+    return UserStateProvider(userReposit);
+  },
+);
 void main() {
   runApp(
     // 앱의 최상위에 ProviderScope를 추가

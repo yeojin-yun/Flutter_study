@@ -1,38 +1,45 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:practice_proxyprovider/proxyprovider_sub.dart';
-import 'package:provider/provider.dart';
 
 class Auth with ChangeNotifier {
   bool _isLoggedIn = false;
   bool get isLoggedIn => _isLoggedIn;
 
-  void login() {
-    _isLoggedIn = true;
+  void changeState() {
+    _isLoggedIn = !_isLoggedIn;
     notifyListeners();
   }
 
-  void logout() {
-    _isLoggedIn = false;
-    notifyListeners();
-  }
+  @override
+  String toString() => 'Auth(_isLoggedIn: $_isLoggedIn)';
 }
 
 class User {
   final bool _isLoggedIn;
   User(this._isLoggedIn);
 
-  String get status => _isLoggedIn ? '로그인' : '로그아웃';
-}
-
-class ProxyProviderExample extends StatefulWidget {
-  const ProxyProviderExample({super.key});
+  String get status => _isLoggedIn ? '로그인 상태입니다.' : '로그아웃 상태입니다.';
 
   @override
-  State<ProxyProviderExample> createState() => _ProxyProviderExampleState();
+  String toString() => 'User(_isLoggedIn: $_isLoggedIn)';
+
+  @override
+  bool operator ==(covariant User other) {
+    if (identical(this, other)) return true;
+
+    return other._isLoggedIn == _isLoggedIn;
+  }
+
+  @override
+  int get hashCode => _isLoggedIn.hashCode;
 }
 
-class _ProxyProviderExampleState extends State<ProxyProviderExample> {
+class ProxyProviderExample extends StatelessWidget {
+  const ProxyProviderExample({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,17 +52,16 @@ class _ProxyProviderExampleState extends State<ProxyProviderExample> {
           children: [
             // Text(context.watch<User>().status),
             const ShowUserStatus(),
+            const SizedBox(height: 30),
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 LoginButton(
-                  title: '로그인',
+                  title: '로그인 상태 바꾸기',
                 ),
-                LoginButton(
-                  title: '로그아웃',
-                )
               ],
             ),
+            const SizedBox(height: 5),
             OutlinedButton(
                 onPressed: () {
                   Navigator.push(
@@ -64,7 +70,7 @@ class _ProxyProviderExampleState extends State<ProxyProviderExample> {
                         builder: (context) => ProxyProviderSubExample(),
                       ));
                 },
-                child: Text('next'))
+                child: Text('다음 페이지'))
           ],
         ),
       ),
@@ -94,9 +100,7 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        title == '로그인'
-            ? context.read<Auth>().login()
-            : context.read<Auth>().logout();
+        context.read<Auth>().changeState();
       },
       child: Text(
         title,

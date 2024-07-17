@@ -9,10 +9,18 @@ class Apiservice {
     dio.options.baseUrl = 'https://jsonplaceholder.typicode.com/users';
   }
 
-  getUserList() async {
+  Future<List<UserModel>> getUserList() async {
     try {
-      final repsonse = await dio.get('');
-      debugPrint('$repsonse');
-    } catch (e) {}
+      final respsonse = await dio.get('');
+
+      // return UserModel.fromJson(respsonse.data);
+      if (respsonse.statusCode == 200) {
+        return userListFromJson(respsonse.data);
+      } else {
+        throw Exception('status code not success');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }

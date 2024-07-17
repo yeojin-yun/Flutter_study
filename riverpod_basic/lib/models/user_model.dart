@@ -4,8 +4,8 @@
 // String welcomeToJson(List<Welcome> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 import 'dart:convert';
 
-List<UserModel> userListFromJson(String jsonData) => List<UserModel>.from(
-    json.decode(jsonData).map((element) => UserModel.fromJson(element)));
+List<UserModel> userListFromJson(dynamic jsonData) => List<UserModel>.from(
+    jsonData.map((element) => UserModel.fromJson(element)));
 
 class UserModel {
   int id;
@@ -33,10 +33,10 @@ class UserModel {
         name: json['name'] as String,
         username: json['phone'] as String,
         email: json['email'] as String,
-        address: json['address'] as Address,
+        address: Address.fromJson(json['address']),
         phone: json['phone'] as String,
         website: json['website'] as String,
-        company: json['company'] as Company);
+        company: Company.fromJson(json['company']));
   }
   factory UserModel.initialize() {
     return UserModel(
@@ -129,7 +129,7 @@ class Address {
         suite: json['suite'] as String,
         city: json['city'] as String,
         zipcode: json['zipcode'] as String,
-        geo: json['geo'] as Geo);
+        geo: Geo.fromJson(json['geo']));
   }
 
   Address copyWith({
