@@ -41,13 +41,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<TempSettingProvider>(
           create: (context) => TempSettingProvider(),
         ),
-        ChangeNotifierProxyProvider<WeatherProvider, ThemeProvider>(
-          create: (context) => ThemeProvider(),
-          update: (BuildContext context, WeatherProvider weatherProvider,
-              ThemeProvider? previous) {
-            return previous!..update(weatherProvider);
+        // ChangeNotifierProxyProvider<WeatherProvider, ThemeProvider>(
+        //   create: (context) => ThemeProvider(),
+        //   update: (BuildContext context, WeatherProvider weatherProvider,
+        //       ThemeProvider? previous) {
+        //     return previous!..update(weatherProvider);
+        //   },
+        // ),
+        ProxyProvider<WeatherProvider, ThemeProvider>(
+          update: (context, value, previous) {
+            return ThemeProvider(weatherProvider: value);
           },
-        ),
+        )
       ],
       builder: (context, _) => MaterialApp(
         title: 'Flutter Demo',

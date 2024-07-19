@@ -82,15 +82,15 @@ class MyHomePage extends StatelessWidget {
             },
           ),
           MenuListTile(
-            title: '할 일',
-            onTap: () {
-              Navigator.pushNamed(context, Routes.todo);
-            },
-          ),
-          MenuListTile(
             title: 'jsonplaceholder',
             onTap: () {
               Navigator.pushNamed(context, Routes.json);
+            },
+          ),
+          MenuListTile(
+            title: '할 일',
+            onTap: () {
+              Navigator.pushNamed(context, Routes.todo);
             },
           ),
           MenuListTile(
