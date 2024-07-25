@@ -64,6 +64,7 @@ class UserStateProvider extends StateNotifier<UserState> {
       debugPrint('userList is null? ${userList}');
       state = state.copyWith(user: userList, status: Status.loaded);
     } catch (e, s) {
+      debugPrint('userList error $e');
       state = state.copyWith(
           user: [UserModel.initialize()],
           status: Status.error,

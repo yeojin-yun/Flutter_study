@@ -6,7 +6,7 @@ class Apiservice {
   final Dio dio;
 
   Apiservice({required this.dio}) {
-    dio.options.baseUrl = 'https://jsonplaceholder.typicode.com/userss';
+    dio.options.baseUrl = 'https://jsonplaceholder.typicode.com/users';
   }
 
   Future<List<UserModel>> getUserList() async {

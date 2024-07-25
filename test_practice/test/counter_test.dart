@@ -2,15 +2,18 @@ import 'package:test/test.dart';
 import 'package:test_practice/counter.dart';
 
 void main() {
-  test(
-    'counter test',
-    () {
-      final counter = Counter();
-      counter.increment();
-      expect(counter.value, 1);
-    },
-  );
-
+  // test(
+  //   'counter test',
+  //   () {
+  //     final counter = Counter();
+  //     counter.increment();
+  //     expect(counter.value, 1);
+  //   },
+  // );
+  // group(
+  //   "dd",
+  //   () {},
+  // );
   group(
     'increment, decrement test',
     () {

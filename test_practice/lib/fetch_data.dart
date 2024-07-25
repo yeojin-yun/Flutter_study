@@ -24,15 +24,47 @@ class ApiService {
 
   ApiService({required this.dio});
 
+  // Future<Album> fetchAlbum() async {
+  //   try {
+  //     final response =
+  //         await dio.get('https://jsonplaceholder.typicode.com/albums/1');
+  //     if (response.statusCode == 200) {
+  //       return Album.fromJson(response.data);
+  //     } else {
+  //       throw DioException;
+  //     }
+  //   } catch (e) {
+  //     if (e is DioException) {
+  //       throw e;
+  //     }
+
+  //     throw DioException(
+  //       requestOptions: RequestOptions(path: ''),
+  //       error: 'An unexpected error occurred',
+  //     );
+  //   }
+  // }
+
   Future<Album> fetchAlbum() async {
-    final response =
-        await dio.get('https://jsonplaceholder.typicode.com/albums/1');
-    if (response.statusCode == 200) {
-      return Album.fromJson(response.data);
-    } else {
-      // throw Exception('Failed to load album');
-      debugPrint('statement');
-      throw Exception('failed');
+    try {
+      final response =
+          await dio.get('https://jsonplaceholder.typicode.com/albums/1');
+      if (response.statusCode == 200) {
+        return Album.fromJson(response.data);
+      } else {
+        // throw DioException;
+        throw HttpException('Failed to load album');
+      }
+    } catch (e) {
+      throw HttpException('Failed to load album');
+      // if (e is DioException) {
+      //   throw e;
+      // }
+
+      // throw DioException(
+      //   requestOptions: RequestOptions(path: ''),
+      //   error: 'An unexpected error occurred',
+      // );
     }
   }
 }
