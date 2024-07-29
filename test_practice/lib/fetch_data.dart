@@ -56,7 +56,8 @@ class ApiService {
         throw HttpException('Failed to load album');
       }
     } catch (e) {
-      throw HttpException('Failed to load album');
+      // throw HttpException('Failed to load album');
+      rethrow;
       // if (e is DioException) {
       //   throw e;
       // }

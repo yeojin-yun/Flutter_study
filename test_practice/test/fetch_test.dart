@@ -67,7 +67,13 @@ void main() {
             type: DioExceptionType.badResponse,
           ));
 
-          expect(() => apiService.fetchAlbum(), throwsA(isA<HttpException>()));
+          // expect(() => apiService.fetchAlbum(), throwsA(isA<HttpException>()));
+          expect(apiService.fetchAlbum(), throwsA(isA<DioException>()));
+
+          // expect(
+          //     apiService.fetchAlbum(),
+          //     throwsA(predicate((e) =>
+          //         e is HttpException && e.message == 'Failed to load album')));
         },
       );
     },
